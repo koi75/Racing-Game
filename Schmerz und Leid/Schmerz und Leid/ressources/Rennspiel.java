@@ -46,7 +46,7 @@ public class Rennspiel extends JFrame implements KeyListener {
 		StartPanel(Rennspiel MainFrame){
 			this.setBackground(new Color(100, 100, 100));
 			
-			this.startButton.addActionListener(e -> MainFrame.showPanel("game"));
+			this.startButton.addActionListener(e -> MainFrame.showPanel("choice"));
 			
 			this.settingsButton.addActionListener(e -> MainFrame.showPanel("settings"));
 			
@@ -91,7 +91,31 @@ public class Rennspiel extends JFrame implements KeyListener {
 	}
 	
 	public class ChoicePanel extends JPanel {
+		//ImageIcon continueButtonIcon = new ImageIcon(/*URL*/);
+		JButton continueButton = new JButton("Continue"/*, continueButtonIcon*/);
 		
+		ChoicePanel(Rennspiel MainFrame){
+			this.setBackground(new Color(100, 100, 100));
+			
+			this.continueButton.addActionListener(e -> MainFrame.showPanel("game"));
+
+			this.setLayout(new BorderLayout());
+			this.add(continueButton, BorderLayout.SOUTH);
+
+			JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			southPanel.add(continueButton);
+			southPanel.setPreferredSize(new Dimension(1920, 100));
+			continueButton.setPreferredSize(new Dimension(1900, 90));
+
+			this.add(southPanel, BorderLayout.SOUTH);
+		}
+		
+		@Override
+		public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Graphics2D g2d = (Graphics2D) g;
+		}
 	}
 	
 	public class LeaderPanel extends JPanel {
@@ -102,7 +126,7 @@ public class Rennspiel extends JFrame implements KeyListener {
 
     public class GamePanel extends JPanel {
         GamePanel() {
-        	
+    		
         }
 
         @Override
@@ -155,6 +179,8 @@ public class Rennspiel extends JFrame implements KeyListener {
     StartPanel sp;
 	SettingPanel stp;
 	GamePanel gp;
+	LeaderPanel lp;
+	ChoicePanel chp;
     
     Rennspiel(Car car1, Rennstrecke rennstrecke) {
     	this.setTitle("Rennspiel");
@@ -163,10 +189,13 @@ public class Rennspiel extends JFrame implements KeyListener {
     	this.sp = new StartPanel(this);
     	this.stp = new SettingPanel();
     	this.gp = new GamePanel();
+    	this.lp = new LeaderPanel();
+    	this.chp = new ChoicePanel(this);
 
     	mainPanel.add(sp, "start");
     	mainPanel.add(stp, "settings");
     	mainPanel.add(gp, "game");
+    	mainPanel.add(chp, "choice");
 
     	this.setContentPane(mainPanel);
 
@@ -280,7 +309,7 @@ public class Rennspiel extends JFrame implements KeyListener {
         AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
         Clip clip = AudioSystem.getClip();
         
-        int delay = 10;
+        int delay = 20;
         ActionListener taskPerformer = new ActionListener() {                                                                                      
             @Override
             public void actionPerformed(ActionEvent evt) { 
