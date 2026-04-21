@@ -35,11 +35,11 @@ public class Rennspiel extends JFrame implements KeyListener {
     JPanel mainPanel = new JPanel(cardLayout);
     
 	public class StartPanel extends JPanel {
-		//ImageIcon startButtonIcon = new ImageIcon(/*URL*/);
+		ImageIcon startButtonIcon = new ImageIcon("Schmerz und Leid\\assets\\images\\startIcon.png");
 		//ImageIcon settingsButtonIcon = new ImageIcon(/*URL*/);
 		//ImageIcon exitButtonIcon = new ImageIcon(/*URL*/);
 		
-		JButton startButton = new JButton("Start"/*, startButtonIcon*/);
+		JButton startButton = new JButton(startButtonIcon);
 		JButton settingsButton = new JButton("Settings"/*, settingsButtonIcon*/);
 		JButton exitButton = new JButton("Exit"/*, settingsButtonIcon*/);
 		
@@ -92,21 +92,100 @@ public class Rennspiel extends JFrame implements KeyListener {
 	
 	public class ChoicePanel extends JPanel {
 		//ImageIcon continueButtonIcon = new ImageIcon(/*URL*/);
+		//ImageIcon toggleButtonIcon = new ImageIcon(/*URL*/);
+		
 		JButton continueButton = new JButton("Continue"/*, continueButtonIcon*/);
+		
+		JToggleButton toggleButton1 = new JToggleButton("Toggle Button1"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton2 = new JToggleButton("Toggle Button2"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton3 = new JToggleButton("Toggle Button3"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton4 = new JToggleButton("Toggle Button4"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton5 = new JToggleButton("Toggle Button5"/*, toggleButtonIcon*/);
+		
+		JToggleButton toggleButton6 = new JToggleButton("Toggle Button3"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton7 = new JToggleButton("Toggle Button4"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton8 = new JToggleButton("Toggle Button5"/*, toggleButtonIcon*/);
+		
+		ActionListener actionListener = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                AbstractButton abstractButton = (AbstractButton)actionEvent.getSource();
+    
+                boolean selected = abstractButton.getModel().isSelected();
+    
+                if(selected == true) {
+                	String name = abstractButton.getText();
+                	System.out.println(name );
+                }
+            }
+        };
 		
 		ChoicePanel(Rennspiel MainFrame){
 			this.setBackground(new Color(100, 100, 100));
 			
 			this.continueButton.addActionListener(e -> MainFrame.showPanel("game"));
+			
+			this.toggleButton1.addActionListener(actionListener);
+			this.toggleButton2.addActionListener(actionListener);
+			this.toggleButton3.addActionListener(actionListener);
+			this.toggleButton4.addActionListener(actionListener);
+			this.toggleButton5.addActionListener(actionListener);
+			this.toggleButton6.addActionListener(actionListener);
+			this.toggleButton7.addActionListener(actionListener);
+			this.toggleButton8.addActionListener(actionListener);
 
 			this.setLayout(new BorderLayout());
-			this.add(continueButton, BorderLayout.SOUTH);
 
+			JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
+			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
+			northPanel.add(toggleButton1);	
+			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
+			northPanel.add(toggleButton2);	
+			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
+			northPanel.add(toggleButton3);	
+			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
+			northPanel.add(toggleButton4);	
+			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
+			northPanel.add(toggleButton5);	
+			northPanel.setPreferredSize(new Dimension(1920, 450));
+
+			toggleButton1.setMaximumSize(new Dimension(300, 300));
+			toggleButton1.setPreferredSize(new Dimension(300, 300));
+			toggleButton2.setMaximumSize(new Dimension(300, 300));
+			toggleButton2.setPreferredSize(new Dimension(300, 300));
+			toggleButton3.setMaximumSize(new Dimension(300, 300));
+			toggleButton3.setPreferredSize(new Dimension(300, 300));
+			toggleButton4.setMaximumSize(new Dimension(300, 300));
+			toggleButton4.setPreferredSize(new Dimension(300, 300));
+			toggleButton5.setMaximumSize(new Dimension(300, 300));
+			toggleButton5.setPreferredSize(new Dimension(300, 300));
+			
+			JPanel centralPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			centralPanel.setLayout(new BoxLayout(centralPanel, BoxLayout.X_AXIS));
+			centralPanel.add(Box.createRigidArea(new Dimension(175, 100)));
+			centralPanel.add(toggleButton6);	
+			centralPanel.add(Box.createRigidArea(new Dimension(175, 100)));
+			centralPanel.add(toggleButton7);	
+			centralPanel.add(Box.createRigidArea(new Dimension(175, 100)));
+			centralPanel.add(toggleButton8);	
+			centralPanel.setPreferredSize(new Dimension(1920, 450));
+			
+			toggleButton6.setMaximumSize(new Dimension(400, 300));
+			toggleButton6.setPreferredSize(new Dimension(400, 300));
+			toggleButton7.setMaximumSize(new Dimension(400, 300));
+			toggleButton7.setPreferredSize(new Dimension(400, 300));
+			toggleButton8.setMaximumSize(new Dimension(400, 300));
+			toggleButton8.setPreferredSize(new Dimension(400, 300));
+			
 			JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			southPanel.add(continueButton);
 			southPanel.setPreferredSize(new Dimension(1920, 100));
 			continueButton.setPreferredSize(new Dimension(1900, 90));
-
+			
+			this.add(northPanel, BorderLayout.NORTH);
+			this.add(centralPanel, BorderLayout.CENTER);
 			this.add(southPanel, BorderLayout.SOUTH);
 		}
 		

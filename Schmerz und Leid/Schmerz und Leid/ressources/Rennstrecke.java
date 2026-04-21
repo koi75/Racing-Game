@@ -28,9 +28,6 @@ public class Rennstrecke {
             return false;
         }
         Color col = new Color(this.track.getRGB(car.x, car.y));
-        System.out.println(col.getBlue());
-        System.out.println(col.getRed());
-        System.out.println(col.getGreen());
 
         if(col.getBlue() == 0 && col.getRed() == 0 && col.getGreen() == 0){
             return true;
