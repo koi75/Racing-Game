@@ -60,9 +60,9 @@ public class Car {
         geschwindigkeit *= FRICTION;
 
         // debug output
-        System.out.println("x: " + x + " y: " + y);
+        /*System.out.println("x: " + x + " y: " + y);
         System.out.println("Geschwindigkeit: " + geschwindigkeit);
-        System.out.println("Rotation: " + rot);
+        System.out.println("Rotation: " + rot);*/
 
         rotCar = rot;
     }
