@@ -13,15 +13,16 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.sound.sampled.*;
 import javax.sound.sampled.FloatControl;
+import java.sql.*;
 
 @SuppressWarnings("serial")
 public class Rennspiel extends JFrame implements KeyListener {
     public Car car1;
     
     public Point mousePoint;
-    
+    public int playerid;
     public Rennstrecke rennstrecke;
-    
+    String url = "jdbc:sqlite:H:\\Programme\\Racing-Game-main\\Racing-Game-main\\Schmerz und Leid\\Schmerz und Leid\\assets\\database\\rennspiel.db";
     public int zeit;
     public int zeitms;
 
@@ -91,26 +92,19 @@ public class Rennspiel extends JFrame implements KeyListener {
 	}
 	
 	public class ChoicePanel extends JPanel {
-		//ImageIcon continueButtonIcon = new ImageIcon(/*URL*/);
-		ImageIcon toggleButtonIcon1 = new ImageIcon("Schmerz und Leid\\assets\\images\\Paul.jpeg");
-		ImageIcon toggleButtonIcon2 = new ImageIcon("Schmerz und Leid\\assets\\images\\Theo.jpeg");
-		ImageIcon toggleButtonIcon3 = new ImageIcon("Schmerz und Leid\\assets\\images\\Khoi.jpeg");
-		ImageIcon toggleButtonIcon4 = new ImageIcon("Schmerz und Leid\\assets\\images\\Lilija.jpeg");
-		ImageIcon toggleButtonIcon5 = new ImageIcon("Schmerz und Leid\\assets\\images\\Tim.jpeg");
 		
-		ImageIcon toggleButtonIcon1SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Paul - SW.jpg");
-		ImageIcon toggleButtonIcon2SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Theo - SW.jpg");
-		ImageIcon toggleButtonIcon3SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Khoi - SW.jpg");
-		ImageIcon toggleButtonIcon4SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Lilija - SW.jpg");
-		ImageIcon toggleButtonIcon5SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Tim - SW.jpg");
+		
+		
+		//ImageIcon continueButtonIcon = new ImageIcon(/*URL*/);
+		//ImageIcon toggleButtonIcon = new ImageIcon(/*URL*/);
 		
 		JButton continueButton = new JButton("Continue"/*, continueButtonIcon*/);
 		
-		JToggleButton toggleButton1 = new JToggleButton("Toggle Button1", toggleButtonIcon1SW);
-		JToggleButton toggleButton2 = new JToggleButton("Toggle Button2", toggleButtonIcon2SW);
-		JToggleButton toggleButton3 = new JToggleButton("Toggle Button3", toggleButtonIcon3SW);
-		JToggleButton toggleButton4 = new JToggleButton("Toggle Button4", toggleButtonIcon4SW);
-		JToggleButton toggleButton5 = new JToggleButton("Toggle Button5", toggleButtonIcon5SW);
+		JToggleButton toggleButton1 = new JToggleButton("Toggle ButtonF1"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton2 = new JToggleButton("Toggle ButtonF2"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton3 = new JToggleButton("Toggle ButtonF3"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton4 = new JToggleButton("Toggle ButtonF4"/*, toggleButtonIcon*/);
+		JToggleButton toggleButton5 = new JToggleButton("Toggle ButtonF5"/*, toggleButtonIcon*/);
 		
 		JToggleButton toggleButton6 = new JToggleButton("Toggle Button3"/*, toggleButtonIcon*/);
 		JToggleButton toggleButton7 = new JToggleButton("Toggle Button4"/*, toggleButtonIcon*/);
@@ -128,18 +122,127 @@ public class Rennspiel extends JFrame implements KeyListener {
     
                 if(selected == true) {
                 	name = abstractButton.getText();
-                	System.out.println(name);
+                	System.out.println(name );
+                }
+                
+                
+
+                
+                
+                switch(name) {
+                case "Toggle ButtonF1":
+                		try{ 
+                			Connection conn = DriverManager.getConnection(url); 
+                			String sql = "select * from fahrer where fid = 1";
+                			Statement st = conn.createStatement();
+                			ResultSet result = st.executeQuery(sql); 
+                			while(result.next()){ 
+                				int fid = result.getInt("fid");
+                				String namef = result.getString("name");
+                				String skill = result.getString("skill");
+                				String team = result.getString("team");
+                				System.out.println(fid + " " + namef + " " + skill + " " + team); 
+                       	 		playerid = fid;
+                       	 	} 
+                       	 }
+                		catch(SQLException e){ 
+                			System.out.println("Datenbankverbindung gescheitert."); 
+                			e.printStackTrace(); 
+                       	} 
+                		break;
+                		
+                		
+                	case "Toggle ButtonF2":
+                		try{ 
+                			Connection conn = DriverManager.getConnection(url); 
+                			String sql = "select * from fahrer where fid = 2"; 
+                			Statement st = conn.createStatement(); 
+                			ResultSet result = st.executeQuery(sql); 
+                			while(result.next()){ 
+                				int fid = result.getInt("fid"); 
+                				String namef = result.getString("name"); 
+                				String skill = result.getString("skill");
+                				String team = result.getString("team");
+                				System.out.println(fid + " " + namef + " " + skill + " " + team);  
+                				playerid = fid;
+                			} 
+                		}
+                		catch(SQLException e){ 
+                			System.out.println("Datenbankverbindung gescheitert."); 
+                			e.printStackTrace(); 
+                		} 
+                		break;
+                		
+                		
+                	case "Toggle ButtonF3":
+                		try{ 
+                			Connection conn = DriverManager.getConnection(url); 
+                			String sql = "select * from fahrer where fid = 3"; 
+                			Statement st = conn.createStatement(); 
+                			ResultSet result = st.executeQuery(sql); 
+                			while(result.next()){ 
+                				int fid = result.getInt("fid"); 
+                				String namef = result.getString("name"); 
+                				String skill = result.getString("skill");
+                				String team = result.getString("team");
+                				System.out.println(fid + " " + namef + " " + skill + " " + team);
+                				playerid = fid;
+                			} 
+                		}
+                		catch(SQLException e){ 
+                			System.out.println("Datenbankverbindung gescheitert."); 
+                			e.printStackTrace(); 
+                		} 
+                		break;
+                		
+                		
+                	case "Toggle ButtonF4":
+                		try{ 
+                			Connection conn = DriverManager.getConnection(url); 
+                			String sql = "select * from fahrer where fid = 4"; 
+                			Statement st = conn.createStatement(); 
+                			ResultSet result = st.executeQuery(sql); 
+                			while(result.next()){ 
+                				int fid = result.getInt("fid"); 
+                				String namef = result.getString("name"); 
+                				String skill = result.getString("skill");
+                				String team = result.getString("team");
+                				System.out.println(fid + " " + namef + " " + skill + " " + team);
+                				playerid = fid;
+                			} 
+                		}
+                		catch(SQLException e){ 
+                			System.out.println("Datenbankverbindung gescheitert."); 
+                			e.printStackTrace(); 
+                		} 
+                		break;
+                		
+                		
+                	case "Toggle ButtonF5":
+                		try{ 
+                			Connection conn = DriverManager.getConnection(url); 
+                			String sql = "select * from fahrer where fid = 5"; 
+                			Statement st = conn.createStatement(); 
+                			ResultSet result = st.executeQuery(sql); 
+                			while(result.next()){ 
+                				int fid = result.getInt("fid"); 
+                				String namef = result.getString("name"); 
+                				String skill = result.getString("skill");
+                				String team = result.getString("team");       
+                				System.out.println(fid + " " + namef + " " + skill + " " + team); 
+                				playerid = fid;
+                			} 
+                		}
+                		catch(SQLException e){ 
+                			System.out.println("Datenbankverbindung gescheitert."); 
+                			e.printStackTrace(); 
+                		} 
+                		break;
                 }
             }
         };
 		
 		ChoicePanel(Rennspiel MainFrame){
-			toggleButton1.setSelectedIcon(toggleButtonIcon1);
-			toggleButton2.setSelectedIcon(toggleButtonIcon2);
-			toggleButton3.setSelectedIcon(toggleButtonIcon3);
-			toggleButton4.setSelectedIcon(toggleButtonIcon4);
-			toggleButton5.setSelectedIcon(toggleButtonIcon5);
-			
 			this.setBackground(new Color(100, 100, 100));
 			
 			this.continueButton.addActionListener(e -> MainFrame.showPanel("game"));
