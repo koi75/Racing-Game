@@ -3,29 +3,39 @@ package ressources;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.sound.sampled.*;
 import javax.sound.sampled.FloatControl;
 
 @SuppressWarnings("serial")
-public class Rennspiel extends JFrame implements KeyListener {
+public class Rennspiel extends JFrame{
     public Car car1;
     
     public Point mousePoint;
     
     public Rennstrecke rennstrecke;
     
+    public int playerId;
+    public int mapId;
+    
     public int zeit;
     public int zeitms;
 
     Color bgcolor = new Color(255,255,255, 0);
+    
+    public boolean check1;
     
     
     //Panels
@@ -48,7 +58,7 @@ public class Rennspiel extends JFrame implements KeyListener {
 			
 			this.startButton.addActionListener(e -> MainFrame.showPanel("choice"));
 			
-			this.settingsButton.addActionListener(e -> MainFrame.showPanel("settings"));
+			this.settingsButton.addActionListener(e -> MainFrame.showPanel("leader"));
 			
 			this.exitButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -91,6 +101,16 @@ public class Rennspiel extends JFrame implements KeyListener {
 	}
 	
 	public class ChoicePanel extends JPanel {
+		JPanel TopPanel;
+		
+		JPanel MiddlePanel;
+		JPanel MiddlePanelSub1;
+		JPanel MiddlePanelSub2;
+		
+		JPanel BottomPanel;
+		
+		JLabel titleLabel;
+		
 		//ImageIcon continueButtonIcon = new ImageIcon(/*URL*/);
 		ImageIcon toggleButtonIcon1 = new ImageIcon("Schmerz und Leid\\assets\\images\\Paul.jpeg");
 		ImageIcon toggleButtonIcon2 = new ImageIcon("Schmerz und Leid\\assets\\images\\Theo.jpeg");
@@ -104,120 +124,359 @@ public class Rennspiel extends JFrame implements KeyListener {
 		ImageIcon toggleButtonIcon4SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Lilija - SW.jpg");
 		ImageIcon toggleButtonIcon5SW = new ImageIcon("Schmerz und Leid\\assets\\images\\Tim - SW.jpg");
 		
-		JButton continueButton = new JButton("Continue"/*, continueButtonIcon*/);
+		JButton continueButton;
 		
-		JToggleButton toggleButton1 = new JToggleButton("Toggle Button1", toggleButtonIcon1SW);
-		JToggleButton toggleButton2 = new JToggleButton("Toggle Button2", toggleButtonIcon2SW);
-		JToggleButton toggleButton3 = new JToggleButton("Toggle Button3", toggleButtonIcon3SW);
-		JToggleButton toggleButton4 = new JToggleButton("Toggle Button4", toggleButtonIcon4SW);
-		JToggleButton toggleButton5 = new JToggleButton("Toggle Button5", toggleButtonIcon5SW);
+		JToggleButton toggleButton1;
+		JToggleButton toggleButton2;
+		JToggleButton toggleButton3;
+		JToggleButton toggleButton4;
+		JToggleButton toggleButton5;
+		JToggleButton toggleButton6;
+		JToggleButton toggleButton7;
+		JToggleButton toggleButton8;
 		
-		JToggleButton toggleButton6 = new JToggleButton("Toggle Button3"/*, toggleButtonIcon*/);
-		JToggleButton toggleButton7 = new JToggleButton("Toggle Button4"/*, toggleButtonIcon*/);
-		JToggleButton toggleButton8 = new JToggleButton("Toggle Button5"/*, toggleButtonIcon*/);
+		ButtonGroup buttonGroup1 = new ButtonGroup();
+		ButtonGroup buttonGroup2 = new ButtonGroup();
 		
-		ActionListener actionListener = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                AbstractButton abstractButton = (AbstractButton)actionEvent.getSource();
-    
-                boolean selected = abstractButton.getModel().isSelected();
-                
-                String name = "";
-    
-                if(selected == true) {
-                	name = abstractButton.getText();
-                	System.out.println(name);
-                }
-            }
-        };
+		private void createTopPanel() {
+			TopPanel = new JPanel();
+            TopPanel.setLayout(new GridBagLayout());
+            TopPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+
+            titleLabel = new JLabel("Choose your Driver and Map!");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+
+            TopPanel.add(titleLabel);
+		}
 		
+		private void createMiddlePanel() {
+
+		    MiddlePanel = new JPanel();
+		    MiddlePanel.setLayout(new GridLayout(2, 1));
+
+		    MiddlePanelSub1 = new JPanel();
+		    MiddlePanelSub2 = new JPanel();
+
+		    MiddlePanelSub1.setLayout(new GridLayout(1, 5, 60, 0));
+		    MiddlePanelSub1.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
+
+		    MiddlePanelSub2.setLayout(new GridLayout(1, 3, 100, 0));
+		    MiddlePanelSub2.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
+
+		    toggleButton1 = new JToggleButton("Toggle Button1", new ImageIcon(toggleButtonIcon1SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton2 = new JToggleButton("Toggle Button2", new ImageIcon(toggleButtonIcon2SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton3 = new JToggleButton("Toggle Button3", new ImageIcon(toggleButtonIcon3SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton4 = new JToggleButton("Toggle Button4", new ImageIcon(toggleButtonIcon4SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton5 = new JToggleButton("Toggle Button5", new ImageIcon(toggleButtonIcon5SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+
+		    toggleButton6 = new JToggleButton("Toggle Button6");
+		    toggleButton7 = new JToggleButton("Toggle Button7");
+		    toggleButton8 = new JToggleButton("Toggle Button8");
+		    
+		    toggleButton1.addActionListener(actionListener);
+		    toggleButton2.addActionListener(actionListener);
+		    toggleButton3.addActionListener(actionListener);
+		    toggleButton4.addActionListener(actionListener);
+		    toggleButton5.addActionListener(actionListener);
+		    
+		    toggleButton1.setSelectedIcon(new ImageIcon(toggleButtonIcon1.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton2.setSelectedIcon(new ImageIcon(toggleButtonIcon2.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton3.setSelectedIcon(new ImageIcon(toggleButtonIcon3.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton4.setSelectedIcon(new ImageIcon(toggleButtonIcon4.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton5.setSelectedIcon(new ImageIcon(toggleButtonIcon5.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+
+		    buttonGroup1 = new ButtonGroup();
+		    buttonGroup1.add(toggleButton1);
+		    buttonGroup1.add(toggleButton2);
+		    buttonGroup1.add(toggleButton3);
+		    buttonGroup1.add(toggleButton4);
+		    buttonGroup1.add(toggleButton5);
+
+		    buttonGroup2 = new ButtonGroup();
+		    buttonGroup2.add(toggleButton6);
+		    buttonGroup2.add(toggleButton7);
+		    buttonGroup2.add(toggleButton8);
+		    
+		    styleButton(toggleButton1);
+		    styleButton(toggleButton2);
+		    styleButton(toggleButton3);
+		    styleButton(toggleButton4);
+		    styleButton(toggleButton5);
+		    styleButton(toggleButton6);
+		    styleButton(toggleButton7);
+		    styleButton(toggleButton8);
+
+		    MiddlePanelSub1.add(toggleButton1);
+		    MiddlePanelSub1.add(toggleButton2);
+		    MiddlePanelSub1.add(toggleButton3);
+		    MiddlePanelSub1.add(toggleButton4);
+		    MiddlePanelSub1.add(toggleButton5);
+		    
+		    MiddlePanelSub2.add(toggleButton6);
+		    MiddlePanelSub2.add(toggleButton7);
+		    MiddlePanelSub2.add(toggleButton8);
+
+		    MiddlePanel.add(MiddlePanelSub1);
+		    MiddlePanel.add(MiddlePanelSub2);
+		}
+		
+		private void createBottomPanel(Rennspiel MainFrame) {
+            BottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            BottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 80, 20, 80));
+
+            continueButton = new JButton("Continue");
+            continueButton.setFont(new Font("Arial", Font.BOLD, 20));
+            continueButton.addActionListener(e -> MainFrame.showPanel("game"));
+            
+            continueButton.setPreferredSize(new Dimension(300, 80));
+            
+            BottomPanel.add(continueButton);
+        }
+		
+		private void styleButton(JToggleButton button) {
+		    button.setPreferredSize(new Dimension(140, 80)); // rectangle shape
+		    button.setFocusPainted(false);
+		    button.setContentAreaFilled(true);
+		    button.setBorderPainted(true);
+		}
+
 		ChoicePanel(Rennspiel MainFrame){
-			toggleButton1.setSelectedIcon(toggleButtonIcon1);
-			toggleButton2.setSelectedIcon(toggleButtonIcon2);
-			toggleButton3.setSelectedIcon(toggleButtonIcon3);
-			toggleButton4.setSelectedIcon(toggleButtonIcon4);
-			toggleButton5.setSelectedIcon(toggleButtonIcon5);
-			
-			this.setBackground(new Color(100, 100, 100));
-			
-			this.continueButton.addActionListener(e -> MainFrame.showPanel("game"));
-			
-			this.toggleButton1.addActionListener(actionListener);
-			this.toggleButton2.addActionListener(actionListener);
-			this.toggleButton3.addActionListener(actionListener);
-			this.toggleButton4.addActionListener(actionListener);
-			this.toggleButton5.addActionListener(actionListener);
-			this.toggleButton6.addActionListener(actionListener);
-			this.toggleButton7.addActionListener(actionListener);
-			this.toggleButton8.addActionListener(actionListener);
+			setLayout(new BorderLayout());
 
-			this.setLayout(new BorderLayout());
+            createTopPanel();
+            createMiddlePanel();
+            createBottomPanel(MainFrame);
 
-			JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
-			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
-			northPanel.add(toggleButton1);	
-			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
-			northPanel.add(toggleButton2);	
-			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
-			northPanel.add(toggleButton3);	
-			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
-			northPanel.add(toggleButton4);	
-			northPanel.add(Box.createRigidArea(new Dimension(70, 100)));
-			northPanel.add(toggleButton5);	
-			northPanel.setPreferredSize(new Dimension(1920, 450));
-
-			toggleButton1.setMaximumSize(new Dimension(300, 300));
-			toggleButton1.setPreferredSize(new Dimension(300, 300));
-			toggleButton2.setMaximumSize(new Dimension(300, 300));
-			toggleButton2.setPreferredSize(new Dimension(300, 300));
-			toggleButton3.setMaximumSize(new Dimension(300, 300));
-			toggleButton3.setPreferredSize(new Dimension(300, 300));
-			toggleButton4.setMaximumSize(new Dimension(300, 300));
-			toggleButton4.setPreferredSize(new Dimension(300, 300));
-			toggleButton5.setMaximumSize(new Dimension(300, 300));
-			toggleButton5.setPreferredSize(new Dimension(300, 300));
-			
-			JPanel centralPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			centralPanel.setLayout(new BoxLayout(centralPanel, BoxLayout.X_AXIS));
-			centralPanel.add(Box.createRigidArea(new Dimension(175, 100)));
-			centralPanel.add(toggleButton6);	
-			centralPanel.add(Box.createRigidArea(new Dimension(175, 100)));
-			centralPanel.add(toggleButton7);	
-			centralPanel.add(Box.createRigidArea(new Dimension(175, 100)));
-			centralPanel.add(toggleButton8);	
-			centralPanel.setPreferredSize(new Dimension(1920, 450));
-			
-			toggleButton6.setMaximumSize(new Dimension(400, 300));
-			toggleButton6.setPreferredSize(new Dimension(400, 300));
-			toggleButton7.setMaximumSize(new Dimension(400, 300));
-			toggleButton7.setPreferredSize(new Dimension(400, 300));
-			toggleButton8.setMaximumSize(new Dimension(400, 300));
-			toggleButton8.setPreferredSize(new Dimension(400, 300));
-			
-			JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			southPanel.add(continueButton);
-			southPanel.setPreferredSize(new Dimension(1920, 100));
-			continueButton.setPreferredSize(new Dimension(1900, 90));
-			
-			this.add(northPanel, BorderLayout.NORTH);
-			this.add(centralPanel, BorderLayout.CENTER);
-			this.add(southPanel, BorderLayout.SOUTH);
+            add(TopPanel, BorderLayout.NORTH);
+            add(MiddlePanel, BorderLayout.CENTER);
+            add(BottomPanel, BorderLayout.SOUTH);
 		}
 		
-		@Override
-		public void paintComponent(Graphics g) {
-            super.paintComponent(g);
+		String url = "jdbc:sqlite:Schmerz und Leid\\assets\\database\\rennspiel.db";
+		
+		//Button Number should not go over 9
+		ActionListener actionListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent actionEvent) {
+		        try {
+		            AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 
-            Graphics2D g2d = (Graphics2D) g;
-		}
+		            if (!abstractButton.getModel().isSelected()) {
+		                return;
+		            }
+		            
+		            String nameButton = abstractButton.getName();
+
+		            int fid = Character.getNumericValue(nameButton.charAt(nameButton.length() - 1));
+
+		            String sql = "select * from fahrer where fid = " + fid;
+
+		            try (Connection conn = DriverManager.getConnection(url);
+		                Statement st = conn.createStatement();
+		                ResultSet result = st.executeQuery(sql)) {
+
+		                while (result.next()) {
+		                    int id = result.getInt("fid");
+		                    String name = result.getString("name");
+		                    String skill = result.getString("skill");
+		                    String team = result.getString("team");
+
+		                    System.out.println(id + " " + name + " " + skill + " " + team);
+		                    playerId = id;
+		                }
+		            }
+
+		        } catch (SQLException e) {
+		            System.out.println("Datenbankverbindung gescheitert.");
+		            e.printStackTrace();
+		        }
+		    }
+		};
 	}
 	
 	public class LeaderPanel extends JPanel {
-		LeaderPanel(){
+		JLabel erster = new JLabel();
+		JLabel zweiter = new JLabel();
+		JLabel dritter = new JLabel();
+		JLabel vierter = new JLabel();
+		JLabel fuenfter = new JLabel();
+		
+		JLabel erster2 = new JLabel();
+		JLabel zweiter2 = new JLabel();
+		JLabel dritter2 = new JLabel();
+		JLabel vierter2 = new JLabel();
+		JLabel fuenfter2 = new JLabel();
+		
+		JLabel tabellenkopf = new JLabel();
+		JLabel tabellenkopf2 = new JLabel();
+		
+		ImageIcon platz1;
+		ImageIcon platz2;
+		ImageIcon platz3;
+		ImageIcon platz4;
+		ImageIcon platz5;
+		
+		JLabel bild1 = new JLabel();
+		JLabel bild2 = new JLabel();
+		JLabel bild3 = new JLabel();
+		JLabel bild4 = new JLabel();
+		JLabel bild5 = new JLabel();
+
+		JButton weiter = new JButton("Weiter");
+		JButton retry = new JButton("Nochmal");
+		
+		int x = 1;
+		
+		String url;
+		
+		LeaderPanel(Rennspiel MainFrame){
 			this.setBackground(new Color(100,100,100));
+			this.setLayout(null);
+			
+			JPanel panel1 = new JPanel();
+			JPanel panel2 = new JPanel();
+			
+			panel1.setLayout(null);
+			panel1.setBounds(0,0, 1920 / 2, 1080);
+			panel2.setLayout(null);
+			panel2.setBounds(1920 / 2,0, 1920 / 2, 1080);
+			
+			weiter.setBounds(panel2.getWidth() - 300,panel2.getHeight() - 300, 200 ,100);
+			this.weiter.addActionListener(e -> MainFrame.showPanel("start"));
+			
+			retry.setBounds(100,panel1.getHeight() - 300, 200 ,100);
+			this.retry.addActionListener(e -> MainFrame.showPanel("game"));
+			
+			bild1 = new JLabel(platz1);
+			bild1.setBounds(300, 150,100,100);
+			bild2 = new JLabel();
+			bild3 = new JLabel();
+			bild4 = new JLabel();
+			bild5 = new JLabel();
+			
+			
+			setup(erster, panel1);
+			setup(zweiter, panel1);
+			setup(dritter, panel1);
+			setup(vierter, panel1);
+			setup(fuenfter, panel1);
+			setup(tabellenkopf, panel1);
+			
+			setup2(erster2, panel2);
+			setup2(zweiter2, panel2);
+			setup2(dritter2, panel2);
+			setup2(vierter2, panel2);
+			setup2(fuenfter2, panel2);
+			setup2(tabellenkopf2, panel2);
+			
+			tabellenkopf.setBounds(400, 80, 1920 / 2 - 400, 50);
+			erster.setBounds(400,150,1920 / 2 - 400, 80);
+            zweiter.setBounds(400,300,1920 / 2 - 400, 80); 
+            dritter.setBounds(400,450,1920 / 2 - 400, 80);
+            vierter.setBounds(400,600,1920 / 2 - 400, 80);
+            fuenfter.setBounds(400,750,1920 / 2 - 400, 80);
+            
+			tabellenkopf2.setBounds(0, 80, 1920 / 2 - 400, 50);
+            erster2.setBounds(0,150,1920 / 2 - 400, 80);
+            zweiter2.setBounds(0,300,1920 / 2 - 400, 80); 
+            dritter2.setBounds(0,450,1920 / 2 - 400, 80);
+            vierter2.setBounds(0,600,1920 / 2 - 400, 80);
+            fuenfter2.setBounds(0,750,1920 / 2 - 400, 80);
+
+            tabellenkopf.setText("   Platz:     Fahrer:");
+            tabellenkopf2.setText("Team:          Zeit:     ");
+			tabellenkopf.setBackground(Color.LIGHT_GRAY);
+			tabellenkopf2.setBackground(Color.LIGHT_GRAY);
+            
+			panel2.add(weiter);
+			panel1.add(retry);
+			panel1.add(bild1);
+			
+			this.add(panel1);
+			this.add(panel2);
+			
+			url = "jdbc:sqlite:Schmerz und Leid\\assets\\database\\rennspiel.db";
+			updatebord();
+		}
+		
+		public void updatebord()
+		{
+			try{
+	            Connection conn = DriverManager.getConnection(url);
+	            String sql = "select * from leaderbord, fahrer where leaderbord.fid = fahrer.fid and platz = "+ x;
+	            Statement st = conn.createStatement();
+	            ResultSet result = st.executeQuery(sql);
+	            
+	            while(result.next()){
+	                int platz = result.getInt("platz");
+	                String fahrer = result.getString("name");
+	                String zeit = result.getString("zeit");
+	                String team = result.getString("team");
+	                
+	                switch(platz) {
+	                case 1: erster.setText("     " + platz + "          " + fahrer);
+	                		erster2.setText(team + 	"   " + zeit + "   ");
+	                		erster.setBackground(new Color(204,204,0));
+	                		erster2.setBackground(new Color(204,204,0));
+	                		platz1 = new ImageIcon("Schmerz und Leid\\assets\\images\\" + fahrer + ".jpeg");
+	                		bild1.setIcon(platz1);
+	                	break;
+	                case 2: zweiter.setText("     " + platz + "          " + fahrer);
+            				zweiter2.setText(team + 	"   " + zeit + "   ");
+	                		zweiter.setBackground(new Color(210,210,210));
+	                		zweiter2.setBackground(new Color(210,210,210));
+	                		platz2 = new ImageIcon("Schmerz und Leid\\assets\\images\\" + fahrer + ".jpeg");
+	                		bild2.setIcon(platz2);
+	                	break;
+	                case 3: dritter.setText("     " + platz + "          " + fahrer);
+            				dritter2.setText(team + 	"   " + zeit + "   ");
+	                		dritter.setBackground(new Color(204,102,0));
+	                		dritter2.setBackground(new Color(204,102,0));
+	                		platz3 = new ImageIcon("Schmerz und Leid\\assets\\images\\" + fahrer + ".jpeg");
+	                		bild3.setIcon(platz3);
+                		break;
+	                case 4: vierter.setText("     " + platz + "          " + fahrer);
+	                		vierter2.setText(team + 	"   " + zeit + "   ");
+	                		vierter.setBackground(Color.LIGHT_GRAY);
+	                		vierter2.setBackground(Color.LIGHT_GRAY);
+	                		platz4 = new ImageIcon("Schmerz und Leid\\assets\\images\\" + fahrer + ".jpeg");
+	                		bild4.setIcon(platz4);
+                		break;
+	                case 5: fuenfter.setText("     " + platz + "          " + fahrer);
+	                		fuenfter2.setText(team + 	"   " + zeit + "   ");
+	                		fuenfter.setBackground(Color.LIGHT_GRAY);
+	                		fuenfter2.setBackground(Color.LIGHT_GRAY);
+	                		platz5 = new ImageIcon("Schmerz und Leid\\assets\\images\\" + fahrer + ".jpeg");
+	                		bild5.setIcon(platz5);
+                		break;
+	                }
+	            }
+	            
+	            if(x < 5)
+	            {
+	            	x = x + 1;
+	            	updatebord();
+	            }
+
+	        }catch(SQLException e){
+	            System.out.println("Datenbankverbindung gescheitert.");
+	            e.printStackTrace();
+	        }
+	        System.out.println();
+		}
+		
+		public void setup(JLabel x, JPanel panel)
+		{
+			x.setFont(new Font("", Font.BOLD, 25));
+	        x.setOpaque(true);
+			panel.add(x);
+		}
+		
+		public void setup2(JLabel x, JPanel panel)
+		{
+			x.setFont(new Font("", Font.BOLD, 25));
+	        x.setOpaque(true);
+			x.setHorizontalAlignment(4);
+			panel.add(x);
 		}
 	}
 
@@ -231,9 +490,11 @@ public class Rennspiel extends JFrame implements KeyListener {
             super.paintComponent(g);
 
             Graphics2D g2d = (Graphics2D) g;
-
-            g2d.drawImage(rennstrecke.track, 0, 0, getWidth(), getHeight(), car1.x - 320, car1.y - 180, car1.x + 320, car1.y + 180, bgcolor, null);
-            g2d.drawImage(rennstrecke.background, 0, 0, getWidth(), getHeight(), car1.x - 320, car1.y - 180, car1.x + 320, car1.y + 180, null);
+            
+            if((rennstrecke.track != null) && (rennstrecke.background != null)) {
+                g2d.drawImage(rennstrecke.track, 0, 0, getWidth(), getHeight(), car1.x - 320, car1.y - 180, car1.x + 320, car1.y + 180, bgcolor, null);
+                g2d.drawImage(rennstrecke.background, 0, 0, getWidth(), getHeight(), car1.x - 320, car1.y - 180, car1.x + 320, car1.y + 180, null);
+            }
 
             mousePoint = getMousePosition(); //Foren und ChatGPT
             if (mousePoint != null) { 
@@ -286,13 +547,14 @@ public class Rennspiel extends JFrame implements KeyListener {
     	this.sp = new StartPanel(this);
     	this.stp = new SettingPanel();
     	this.gp = new GamePanel();
-    	this.lp = new LeaderPanel();
+    	this.lp = new LeaderPanel(this);
     	this.chp = new ChoicePanel(this);
 
     	mainPanel.add(sp, "start");
     	mainPanel.add(stp, "settings");
     	mainPanel.add(gp, "game");
     	mainPanel.add(chp, "choice");
+    	mainPanel.add(lp, "leader");
 
     	this.setContentPane(mainPanel);
 
@@ -305,7 +567,6 @@ public class Rennspiel extends JFrame implements KeyListener {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setVisible(true);
         this.setBackground(new Color(0, 67, 0));
-        this.addKeyListener(this);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.toFront();
         this.requestFocus();
@@ -319,47 +580,25 @@ public class Rennspiel extends JFrame implements KeyListener {
     ActionMap actionMap = mainPanel.getActionMap();
     
     public void Movement() {
-        actionMap.put("keyW", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	car1.Steigung("Oben");
-            }
-        });
-        actionMap.put("keyS", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	car1.Steigung("Unten");
-            }
-        });
+    	if(check1 == false) {
+	        actionMap.put("keyW", new AbstractAction() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	car1.Steigung("Oben");
+	            }
+	        });
+	        actionMap.put("keyS", new AbstractAction() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	car1.Steigung("Unten");
+	            }
+	        });
+	        
+	        check1 = true;
+    	}
         
         inputMap.put(KeyStroke.getKeyStroke("pressed W"), "keyW");
         inputMap.put(KeyStroke.getKeyStroke("pressed S"), "keyS");
-    }
-    
-    @Override
-    public void keyTyped(KeyEvent e) {
-        // Not used
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        /*int keyCode = e.getKeyCode();
-        switch (keyCode) {
-            case KeyEvent.VK_W:
-                this.car1.Steigung("Oben");
-                break;
-            case KeyEvent.VK_S:
-                this.car1.Steigung("Unten");
-                break;
-            default:
-                break;
-        }
-        //System.out.println("Key pressed: " + KeyEvent.getKeyText(keyCode));*/
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        // Not used
     }
 
     public Point getMouse(){
@@ -385,8 +624,6 @@ public class Rennspiel extends JFrame implements KeyListener {
     }
 
     public static void main(String[] args) throws IOException, LineUnavailableException, UnsupportedAudioFileException { 	
-        //BufferedImage carI = ImageIO.read(new File("H:\\Programme\\erstesProjekt\\Schmerz und Leid\\ressources\\car1.png"));
-        //BufferedImage carI = ImageIO.read(new File("C:\\Users\\minhk\\Downloads\\car1.png"));
     	//System.out.println(System.getProperty("user.dir"));
     	
     	BufferedImage carI = ImageIO.read(new File("Schmerz und Leid\\assets\\images\\car1.png"));
@@ -395,13 +632,14 @@ public class Rennspiel extends JFrame implements KeyListener {
 
         Rennspiel rsp = new Rennspiel(car1, rennstrecke);
         
+    	rsp.Movement();
+        
         rsp.mousePoint = rsp.getMouse(); 
 
         int cx = rsp.getWidth() / 2;
         int cy = rsp.getHeight() / 2;
         
         //Audio:
-        //File audioFile = new File("H:\\Programme\\erstesProjekt\\Schmerz und Leid\\ressources\\raceSound.wav");
         File audioFile = new File("Schmerz und Leid\\assets\\sound\\raceSound.wav");
         AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
         Clip clip = AudioSystem.getClip();
@@ -410,7 +648,6 @@ public class Rennspiel extends JFrame implements KeyListener {
         ActionListener taskPerformer = new ActionListener() {                                                                                      
             @Override
             public void actionPerformed(ActionEvent evt) { 
-            	rsp.Movement();
             	if(car1.lap == 0) {
             		rsp.Timer();
             	}
@@ -418,7 +655,7 @@ public class Rennspiel extends JFrame implements KeyListener {
             		try {
             			if(!clip.isActive()) {
             				clip.open(audioStream);
-                            clip.start();
+                            clip.loop(Clip.LOOP_CONTINUOUSLY);
                             rsp.setVolume(0, clip);
             			}
             			else if(clip.isActive()) {
@@ -430,8 +667,7 @@ public class Rennspiel extends JFrame implements KeyListener {
                     }
             	}
             	if(car1.geschwindigkeit == 0) {
-                	clip.stop();
-                	clip.close();
+            		rsp.setVolume(0, clip);
                 }
                 if(rsp.mousePoint != null){
                     car1.movement(Math.atan2(rsp.mousePoint.y - cy, rsp.mousePoint.x - cx));
