@@ -3,6 +3,8 @@ package ressources;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -158,32 +160,31 @@ public class Rennspiel extends JFrame{
 		    MiddlePanelSub2 = new JPanel();
 
 		    MiddlePanelSub1.setLayout(new GridLayout(1, 5, 60, 0));
-		    MiddlePanelSub1.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
+		    MiddlePanelSub1.setBorder(BorderFactory.createEmptyBorder(50, 80, 50, 80));
 
 		    MiddlePanelSub2.setLayout(new GridLayout(1, 3, 100, 0));
 		    MiddlePanelSub2.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
 
-		    toggleButton1 = new JToggleButton("Toggle Button1", new ImageIcon(toggleButtonIcon1SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton2 = new JToggleButton("Toggle Button2", new ImageIcon(toggleButtonIcon2SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton3 = new JToggleButton("Toggle Button3", new ImageIcon(toggleButtonIcon3SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton4 = new JToggleButton("Toggle Button4", new ImageIcon(toggleButtonIcon4SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton5 = new JToggleButton("Toggle Button5", new ImageIcon(toggleButtonIcon5SW.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+		    toggleButton1 = new JToggleButton();
+		    toggleButton2 = new JToggleButton();
+		    toggleButton3 = new JToggleButton();
+		    toggleButton4 = new JToggleButton();
+		    toggleButton5 = new JToggleButton();
 
 		    toggleButton6 = new JToggleButton("Toggle Button6");
 		    toggleButton7 = new JToggleButton("Toggle Button7");
 		    toggleButton8 = new JToggleButton("Toggle Button8");
 		    
+		    toggleButton1.setActionCommand("1");
 		    toggleButton1.addActionListener(actionListener);
+		    toggleButton2.setActionCommand("2");
 		    toggleButton2.addActionListener(actionListener);
+		    toggleButton3.setActionCommand("3");
 		    toggleButton3.addActionListener(actionListener);
+		    toggleButton4.setActionCommand("4");
 		    toggleButton4.addActionListener(actionListener);
+		    toggleButton5.setActionCommand("5");
 		    toggleButton5.addActionListener(actionListener);
-		    
-		    toggleButton1.setSelectedIcon(new ImageIcon(toggleButtonIcon1.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton2.setSelectedIcon(new ImageIcon(toggleButtonIcon2.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton3.setSelectedIcon(new ImageIcon(toggleButtonIcon3.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton4.setSelectedIcon(new ImageIcon(toggleButtonIcon4.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
-		    toggleButton5.setSelectedIcon(new ImageIcon(toggleButtonIcon5.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
 
 		    buttonGroup1 = new ButtonGroup();
 		    buttonGroup1.add(toggleButton1);
@@ -218,6 +219,12 @@ public class Rennspiel extends JFrame{
 
 		    MiddlePanel.add(MiddlePanelSub1);
 		    MiddlePanel.add(MiddlePanelSub2);
+		    
+		    setAutoScaledIcon(toggleButton1, toggleButtonIcon1SW, toggleButtonIcon1);
+		    setAutoScaledIcon(toggleButton2, toggleButtonIcon2SW, toggleButtonIcon2);
+		    setAutoScaledIcon(toggleButton3, toggleButtonIcon3SW, toggleButtonIcon3);
+		    setAutoScaledIcon(toggleButton4, toggleButtonIcon4SW, toggleButtonIcon4);
+		    setAutoScaledIcon(toggleButton5, toggleButtonIcon5SW, toggleButtonIcon5);
 		}
 		
 		private void createBottomPanel(Rennspiel MainFrame) {
@@ -238,6 +245,26 @@ public class Rennspiel extends JFrame{
 		    button.setFocusPainted(false);
 		    button.setContentAreaFilled(true);
 		    button.setBorderPainted(true);
+		}
+		
+		private void setAutoScaledIcon(JToggleButton button, ImageIcon normal, ImageIcon selected) {
+
+		    button.addComponentListener(new ComponentAdapter() {
+		        @Override
+		        public void componentResized(ComponentEvent e) {
+
+		            int w = button.getWidth();
+		            int h = button.getHeight();
+
+		            if (w <= 0 || h <= 0) return;
+
+		            Image scaledNormal = normal.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
+		            Image scaledSelected = selected.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
+
+		            button.setIcon(new ImageIcon(scaledNormal));
+		            button.setSelectedIcon(new ImageIcon(scaledSelected));
+		        }
+		    });
 		}
 
 		ChoicePanel(Rennspiel MainFrame){
@@ -263,16 +290,14 @@ public class Rennspiel extends JFrame{
 		            if (!abstractButton.getModel().isSelected()) {
 		                return;
 		            }
-		            
-		            String nameButton = abstractButton.getName();
 
-		            int fid = Character.getNumericValue(nameButton.charAt(nameButton.length() - 1));
+		            int fid = Integer.parseInt(abstractButton.getActionCommand());
 
 		            String sql = "select * from fahrer where fid = " + fid;
 
 		            try (Connection conn = DriverManager.getConnection(url);
-		                Statement st = conn.createStatement();
-		                ResultSet result = st.executeQuery(sql)) {
+		                 Statement st = conn.createStatement();
+		                 ResultSet result = st.executeQuery(sql)) {
 
 		                while (result.next()) {
 		                    int id = result.getInt("fid");
@@ -653,7 +678,7 @@ public class Rennspiel extends JFrame{
             	}
             	if(car1.geschwindigkeit != 0) {
             		try {
-            			if(!clip.isActive()) {
+            			/*if(!clip.isActive()) {
             				clip.open(audioStream);
                             clip.loop(Clip.LOOP_CONTINUOUSLY);
                             rsp.setVolume(0, clip);
@@ -661,13 +686,13 @@ public class Rennspiel extends JFrame{
             			else if(clip.isActive()) {
             				rsp.setVolume(car1.geschwindigkeit/10, clip);
             				//System.out.println("Clip level: " + clip.getLevel());
-            			}
+            			}*/
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
             	}
             	if(car1.geschwindigkeit == 0) {
-            		rsp.setVolume(0, clip);
+            		//rsp.setVolume(0, clip);
                 }
                 if(rsp.mousePoint != null){
                     car1.movement(Math.atan2(rsp.mousePoint.y - cy, rsp.mousePoint.x - cx));
@@ -685,9 +710,13 @@ public class Rennspiel extends JFrame{
                         }
                     }
                     if(rennstrecke.speedBoost(car1)){
-                        if(car1.geschwindigkeit == 10){
+                        if(car1.geschwindigkeit >= 10){
+                        	car1.MAX_SPEED = 20;
                             car1.geschwindigkeit = car1.geschwindigkeit * 3;
                         }
+                    }
+                    else {
+                    	car1.MAX_SPEED = 10;
                     }
                 }
                 rsp.repaint();
